@@ -11,7 +11,7 @@ export const zhTW = {
   loadingStages: [
     '選票封箱中…',
     '核對上車站與本班列車…',
-    '向交通資料中心查驗目的地…',
+    '向臺北捷運官方班表查驗目的地…',
     '大橋頭選區進行最終計票…',
   ],
   resultTitle: '本班次開票完成',
@@ -19,13 +19,13 @@ export const zhTW = {
   votes: '本班有效票',
   voteUnit: '票',
   confidence: '判定可信度',
-  sourceLive: '即時到離站資料',
-  sourceTimetable: '站別時刻表推定',
+  sourceLive: '臺北捷運即時到站資料',
+  sourceTimetable: '臺北捷運官方時刻表',
   sourceDemo: 'Demo 模擬資料',
   again: '再開一班',
   disclaimer: '本網站為網路迷因／非官方娛樂作品，與臺北捷運及任何選務機關無關。實際乘車資訊請以現場公告為準。',
-  dataNote: '資料介接：交通部 TDX（正式模式）',
-  contribute: 'GitHub · 真正的技術民主實踐：歡迎送 PR',
+  dataNote: '資料來源：臺北捷運官方開放資料（站別時刻表）',
+  contribute: 'GitHub · 歡迎送 PR 一起改進開票系統',
 };
 
 export type LocaleDictionary = typeof zhTW;
