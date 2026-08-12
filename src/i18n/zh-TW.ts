@@ -1,0 +1,30 @@
+export const zhTW = {
+  brand: '橘線開票所',
+  kicker: '中和新蘆線・非官方模擬開票中心',
+  title: '本班列車，究竟是蘆洲派還是迴龍派？',
+  subtitle: '您的終點，由民主決定。',
+  direction: '限往蘆洲／迴龍方向',
+  stationQuestion: '你剛剛在哪一站上車？',
+  stationHint: '上車後 2 分鐘內開票最準。請選擇南勢角～大橋頭之間的上車站。',
+  submit: '送出本班選票',
+  loadingTitle: '中央列車選務系統開票中',
+  loadingStages: [
+    '選票封箱中…',
+    '核對上車站與本班列車…',
+    '向交通資料中心查驗目的地…',
+    '大橋頭選區進行最終計票…',
+  ],
+  resultTitle: '本班次開票完成',
+  elected: '宣布當選',
+  votes: '本班有效票',
+  voteUnit: '票',
+  confidence: '判定可信度',
+  sourceLive: '即時到離站資料',
+  sourceTimetable: '站別時刻表推定',
+  sourceDemo: 'Demo 模擬資料',
+  again: '再開一班',
+  disclaimer: '本網站為網路迷因／非官方娛樂作品，與臺北捷運及任何選務機關無關。實際乘車資訊請以現場公告為準。',
+  dataNote: '資料介接：交通部 TDX（正式模式）',
+};
+
+export type LocaleDictionary = typeof zhTW;
