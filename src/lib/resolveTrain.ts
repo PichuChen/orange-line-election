@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { getOfficialDepartures, type Camp, type OfficialDeparture } from './trtc';
+import { estimateRidership } from './ridership';
 
 export type { Camp };
 export type ResolveSource = 'timetable' | 'demo';
@@ -13,6 +14,8 @@ export type TrainResolution = {
   matchedDeparture?: string;
   observedAt: string;
   estimatedVoters?: number;
+  ridershipSourceMonth?: string;
+  ridershipMethod?: 'orange-line-od-lower-bound';
 };
 
 function taipeiClock(now: Date): { hour: number; minute: number } {
@@ -98,7 +101,10 @@ export async function resolveTrain(stationID: string, now = new Date()): Promise
   try {
     const departures = await getOfficialDepartures(stationID, now);
     const result = fromOfficialTimetable(departures, now);
-    if (result) return result;
+    if (result) {
+      const ridership = estimateRidership(stationID, departures, now);
+      return ridership ? { ...result, ...ridership } : result;
+    }
   } catch (error) {
     console.warn('TRTC official timetable lookup failed; falling back to demo', error);
   }
