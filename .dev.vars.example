@@ -1,3 +1,2 @@
-TDX_CLIENT_ID=your-client-id
-TDX_CLIENT_SECRET=your-client-secret
+# Optional: force deterministic demo mode for UI development.
 ORANGE_LINE_DEMO=false
