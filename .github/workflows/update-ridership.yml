@@ -1,0 +1,42 @@
+name: Update ridership profile
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 12 * *'
+  push:
+    paths:
+      - 'scripts/update-ridership.mjs'
+      - '.github/workflows/update-ridership.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ridership-profile-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Build latest Taipei Metro OD profile
+        run: node scripts/update-ridership.mjs
+      - name: Commit refreshed profile
+        run: |
+          if git diff --quiet -- src/data/ridership-profile.json; then
+            echo 'Ridership profile is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/data/ridership-profile.json
+          git commit -m 'data: refresh Taipei Metro ridership profile'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
