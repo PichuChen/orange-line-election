@@ -25,6 +25,7 @@ export const zhTW = {
   again: '再開一班',
   disclaimer: '本網站為網路迷因／非官方娛樂作品，與臺北捷運及任何選務機關無關。實際乘車資訊請以現場公告為準。',
   dataNote: '資料介接：交通部 TDX（正式模式）',
+  contribute: 'GitHub · 真正的技術民主實踐：歡迎送 PR',
 };
 
 export type LocaleDictionary = typeof zhTW;
