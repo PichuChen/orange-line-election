@@ -1,6 +1,6 @@
 {
   "sourceMonth": "2026-06",
-  "generatedAt": "2026-08-12T07:54:59.514Z",
+  "generatedAt": "2026-08-12T07:57:45.892Z",
   "method": "orange-line-od-lower-bound",
   "limitation": "Only Orange Line OD pairs that definitely cross the selected northbound common segment are counted; transfer passengers are not fully represented.",
   "weekday": {
