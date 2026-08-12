@@ -4,20 +4,43 @@
 
 一個以臺北捷運中和新蘆線「蘆洲 vs. 迴龍」為題材的非官方迷因網站。使用者選擇剛上車的共同區間車站，網站以假開票動畫呈現該班列車推定的真正目的地。
 
-**這是 parody / 非官方娛樂作品，與臺北捷運公司、TDX 或任何選務機關無關。實際列車資訊請以臺北捷運現場資訊為準。**
+**這是 parody / 非官方娛樂作品，與臺北捷運公司或任何選務機關無關。實際列車資訊請以臺北捷運現場資訊為準。**
 
 ## MVP
 
 - 上車站：O01 南勢角～O12 大橋頭
 - 方向：往蘆洲／迴龍
-- 判定順序：
-  1. TDX `LiveBoard/TRTC`：若選定站有到站列車資料，優先採用目的站
-  2. TDX `StationTimeTable/TRTC`：以台北時間找距現在最近的發車班次，偏向「剛剛已發車」
-  3. 若未設定金鑰或查詢失敗：deterministic demo mode
-- 前端：假選務開票動畫；最後刻意收斂成「1 : 0」有效票
-- i18n：文案集中在 `src/i18n/zh-TW.ts`，預留英文／日文／韓文版本
+- 班次資料：臺北捷運公司公開的中和新蘆線站別時刻表
+- 判定方式：以臺北時間尋找最接近、並略偏向「剛剛已離站」的官方預定班次
+- 若官方資料暫時無法取得：deterministic demo mode
+- i18n：預留 English / 日本語 / 한국어
 
-> 臺北捷運目前的 TDX `LiveBoard` 有已知限制：通常只有列車實際到站時才會出現，因此正式版仍以站別時刻表作補位，後續會再加 recent-event cache。
+## 官方資料來源
+
+目前不需要 TDX Client ID / Client Secret。
+
+班次判定直接讀取臺北捷運公司在臺北市資料大平臺公開的「臺北捷運站別時刻表資料服務」：
+
+- 中和新蘆線平日時刻表
+- 中和新蘆線假日時刻表
+- 主要欄位包含 `StationID`、`DestinationStationName`、`DepartureTimes`、`EffectiveDate`
+
+凌晨 00:00～03:59 會視為前一個捷運服務日。國定假日的額外判斷仍在 roadmap。
+
+另外，臺北捷運也有公開每 30 秒更新的「列車到站站名」資料，後續可拿來做即時校正。
+
+## 票數怎麼來？
+
+目前公開資料沒有「每一班列車的實際載客人數」，所以不會假裝有。
+
+臺北捷運有公開「每日分時各站 OD 流量」，後續會用它建立**歷史人流推估模型**：
+
+1. 依星期類型與小時彙整 OD 流量。
+2. 推估通過中和新蘆線共同區間某斷面的北向旅客量。
+3. 再用該小時官方班次數換算成單班估計載客量。
+4. 顯示為「推估票數」，不是即時、也不是逐班實測。
+
+在模型完成前，開票動畫仍以 1 : 0 當作迷因 fallback。
 
 ## Local development
 
@@ -27,53 +50,32 @@ cp .dev.vars.example .dev.vars
 npm run dev
 ```
 
-填入：
+若要強制 demo mode：
 
 ```env
-TDX_CLIENT_ID=...
-TDX_CLIENT_SECRET=...
-ORANGE_LINE_DEMO=false
+ORANGE_LINE_DEMO=true
 ```
 
-TDX Client Secret 僅在 server-side 使用，**不要送到瀏覽器，也不要 commit `.dev.vars`**。
-
 ## Cloudflare Workers
-
-本專案使用 Astro 7 SSR + `@astrojs/cloudflare`，部署目標為 Cloudflare Workers。TDX secrets 由 Workers runtime 的 `cloudflare:workers` `env` 讀取，不會打包進瀏覽器端。
 
 ```bash
 npm install
 npm run build
-npx wrangler login
-npx wrangler secret put TDX_CLIENT_ID
-npx wrangler secret put TDX_CLIENT_SECRET
 npx wrangler deploy
 ```
 
-若要暫時強制 demo mode：
-
-```bash
-npx wrangler secret put ORANGE_LINE_DEMO
-```
-
-值設為 `true` 即可。
-
-正式部署也可以在 Cloudflare Dashboard 將 GitHub repository 連到 Workers Builds；主分支 push 後自動 build/deploy。
-
-## TDX endpoints
-
-- OAuth token: `https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token`
-- LiveBoard: `https://tdx.transportdata.tw/api/basic/v2/Rail/Metro/LiveBoard/TRTC`
-- StationTimeTable: `https://tdx.transportdata.tw/api/basic/v2/Rail/Metro/StationTimeTable/TRTC`
+也可以在 Cloudflare Dashboard 將 GitHub repository 連到 Workers Builds，讓 `main` push 後自動部署。
 
 ## Roadmap
 
-1. TDX 真實資料實測與 destination / RouteID 校正
-2. recent-event cache，改善「列車剛離站」判定
-3. 國定假日 / SpecialDays 服務日判斷
-4. English / 日本語 / 한국어
-5. 分享圖與「今日總開票結果」
+1. 官方時刻表 CSV parser 實車驗證
+2. 官方「列車到站站名」30 秒資料做即時校正
+3. 由官方每日分時 OD 產生每班 `estimatedVoters`
+4. 國定假日服務日判斷
+5. English / 日本語 / 한국어
 6. Open Graph / Threads 分享最佳化
+
+PR、Issue 都歡迎，畢竟開票系統也需要民間監票（？）
 
 ## License
 
